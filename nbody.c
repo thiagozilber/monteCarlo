@@ -95,7 +95,9 @@ void compute_forces(Body *bodies, int num_bodies) {
 
     /* All-pairs force calculation */
     for (int body_i = 0; body_i < num_bodies; body_i++) {
-        for (int body_j = body_i + 1; body_j < num_bodies; body_j++) {
+        for (int body_j = 0; body_j < num_bodies; body_j++) {
+            if (body_j == body_i) continue;
+            
             double delta_x = bodies[body_j].pos_x - bodies[body_i].pos_x;
             double delta_y = bodies[body_j].pos_y - bodies[body_i].pos_y;
             double delta_z = bodies[body_j].pos_z - bodies[body_i].pos_z;
@@ -121,10 +123,6 @@ void compute_forces(Body *bodies, int num_bodies) {
             bodies[body_i].force_x += force_x;
             bodies[body_i].force_y += force_y;
             bodies[body_i].force_z += force_z;
-
-            bodies[body_j].force_x -= force_x;
-            bodies[body_j].force_y -= force_y;
-            bodies[body_j].force_z -= force_z;
         }
     }
 }

@@ -38,6 +38,7 @@
 #define DEFAULT_NUM_BODIES  8000
 #define DEFAULT_NUM_STEPS   100
 #define DEFAULT_THREADS     2
+#define SCHEDULE            dynamic
 
 #define GRAVITATIONAL_CONST 6.674e-11   /* m³ kg⁻¹ s⁻²              */
 #define SOFTENING_FACTOR    1e-9        /* prevents singularities     */
@@ -95,8 +96,7 @@ void compute_forces(Body *bodies, int num_bodies, int threads) {
     }
 
     /* All-pairs force calculation */
-    #pragma omp parallel num_threads(threads)
-        #pragma omp for
+    #pragma omp parallel for schedule(static) num_threads(threads)
         for (int body_i = 0; body_i < num_bodies; body_i++) {
             for (int body_j = body_i + 1; body_j < num_bodies; body_j++) {
                 double delta_x = bodies[body_j].pos_x - bodies[body_i].pos_x;

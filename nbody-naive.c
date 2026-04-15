@@ -39,8 +39,6 @@
 #define DEFAULT_NUM_STEPS   100
 #define DEFAULT_THREADS     2
 
-#define SCHEDULE dynamic
-
 #define GRAVITATIONAL_CONST 6.674e-11   /* m³ kg⁻¹ s⁻²              */
 #define SOFTENING_FACTOR    1e-9        /* prevents singularities     */
 #define TIMESTEP_SECONDS    0.01        /* seconds per simulation step */
@@ -97,9 +95,13 @@ void compute_forces(Body *bodies, int num_bodies, int threads) {
     }
 
     /* All-pairs force calculation */
-    #pragma omp parallel for schedule(SCHEDULE) num_threads(threads)
+    #ifdef CHUNK_SIZE
+        #pragma omp parallel for schedule(SCHED_TYPE, CHUNK_SIZE) num_threads(threads)
+    #else
+        #pragma omp parallel for schedule(SCHED_TYPE) num_threads(threads)
+    #endif
     for (int body_i = 0; body_i < num_bodies; body_i++) {
-        for (int body_j = body_i + 1; body_j < num_bodies; body_j++) {
+        for (int body_j = 0; body_j < num_bodies; body_j++) {
             if (body_j == body_i) continue;
             double delta_x = bodies[body_j].pos_x - bodies[body_i].pos_x;
             double delta_y = bodies[body_j].pos_y - bodies[body_i].pos_y;
