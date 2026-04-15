@@ -43,13 +43,13 @@ echo -e "${BOLD}Benchmarking $PROGRAM${RESET}"
 echo "  Bodies: $NUM_BODIES  |  Steps: $NUM_STEPS  |  Runs per config: $RUNS"
 echo ""
 
-# Serial reference (always runs)
+# Serial reference (always runs ./nbody regardless of --naive/--smart)
 echo -e "${YELLOW}  Running serial reference...${RESET}"
 serial_total=0
 for run in $(seq 1 $RUNS); do
     current_run=$(( current_run + 1 ))
     print_progress "serial  run=$run/$RUNS"
-    t=$($PROGRAM $NUM_BODIES $NUM_STEPS 1 2>/dev/null \
+    t=$(./nbody $NUM_BODIES $NUM_STEPS 2>/dev/null \
         | grep "Time" | awk '{print $4}')
     serial_total=$(echo "$serial_total + $t" | bc -l)
 done
